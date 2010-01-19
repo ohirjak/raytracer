@@ -4,12 +4,9 @@
  * @description: 
  */
 
-#include <iostream>
 #include <math.h>
 #include "colors.h"
 #include "geometries.h"
-
-using namespace std;
 
 
 Vector3D Vector3D::Normalize() const

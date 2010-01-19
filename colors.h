@@ -26,5 +26,18 @@ struct Color
 };
 
 
+union ColorRGBA
+{
+	unsigned char color[4];
+
+	struct {
+		unsigned char R;
+		unsigned char G;
+		unsigned char B;
+		unsigned char A;
+	} x;
+};
+
+
 #endif // colors_h
 
