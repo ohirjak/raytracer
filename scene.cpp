@@ -50,7 +50,7 @@ GeometryObject* Scene::GetIntersectObject(Ray &ray)
 
 		if (tObject != INFINITY)
 		{
-			if (t != INFINITY && tObject < t || t == INFINITY)
+			if ((t != INFINITY && tObject < t) || t == INFINITY)
 			{
 				object = *it;
 				t = tObject;
@@ -166,6 +166,8 @@ struct BMP_header
 
 void Scene::Render(double viewDist, double viewSize, long hRes, long vRes)
 {
+	// TODO: Implement rendering to buffer
+	// TODO: Split to threads, GPUs, nodes
 	// Renderer uses OpenGL right-handed coords
 	// Outputs to BMP file output.bmp
 

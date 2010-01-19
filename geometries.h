@@ -144,6 +144,8 @@ class Sphere : public GeometryObject
 		void GetPointStats(Point3D &pPoint, Vector3D &pNormal, Color &pColor);
 };
 
+// TODO: Implement block and plane
+
 
 #endif // geometries_h
 

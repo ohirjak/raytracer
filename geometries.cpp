@@ -44,6 +44,7 @@ Vector3D Vector3D::operator *(double t)
 }
 
 
+// TODO: Move non-geometry stuff out
 Color Color::Cap()
 {
 	Color c = *this;

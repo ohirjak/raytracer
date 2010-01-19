@@ -13,6 +13,8 @@ using namespace std;
 
 void initScene(Scene *s)
 {
+	// TODO: Load scene conf. from file
+	// TODO: Create test file Cornell Box and get Stanford Bunny
 	Sphere *sphere;
 
 	for (int i = 0; i < 3; i++)
