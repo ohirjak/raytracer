@@ -8,7 +8,7 @@
 #define colors_h
 
 
-class Color
+struct Color
 {
 	public:
 		double r, g, b, a;

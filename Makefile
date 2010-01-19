@@ -1,18 +1,19 @@
 # @file: Makefile
 # @project: raytracer
 # @author: Ondrej Hirjak, 2009-2010
-# @description: 
+# @description: Project makefile.
 
 CPP = g++
 CXXFLAGS = -pipe -Wall -g
 LDFLAGS = -pipe
 LIBS =
-SRC = colors.cpp geometries.cpp main.cpp scene.cpp
+SRC = colors.cpp geometries.cpp main.cpp render.cpp scene.cpp
 OUT = raytracer
 
 .PHONY: all build optimized tags clean distclean
 
-all: build
+all:
+	make -j3 build
 
 build: $(OUT)
 
@@ -21,6 +22,12 @@ optimized:
 
 run: build
 	./$(OUT)
+
+show_output:
+	eog output.bmp
+
+show_debug:
+	eog debug.bmp
 
 $(OUT): $(SRC:.cpp=.o)
 	$(CPP) $(LDFLAGS) $(LIBS) -o $(OUT) $(SRC:.cpp=.o)
