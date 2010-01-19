@@ -11,6 +11,7 @@ LDFLAGS = -pipe
 LIBS =
 SRC = colors.cpp geometries.cpp main.cpp render.cpp scene.cpp
 OUT = raytracer
+OUTPUTS = output.bmp debug.bmp
 
 .PHONY: all build optimized tags clean distclean
 
@@ -37,7 +38,7 @@ clean:
 	-rm $(OUT) $(SRC:.cpp=.o)
 
 distclean: clean
-	-rm tags core output.bmp
+	-rm tags core $(OUTPUTS)
 
 # running & results
 

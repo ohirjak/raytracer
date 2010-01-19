@@ -39,5 +39,18 @@ union ColorRGBA
 };
 
 
+union ColorBGRA
+{
+	unsigned char color[4];
+
+	struct {
+		unsigned char B;
+		unsigned char G;
+		unsigned char R;
+		unsigned char A;
+	} x;
+};
+
+
 #endif // colors_h
 

@@ -29,7 +29,7 @@ class Scene
 		list<GeometryObject *> objects;
 
 		GeometryObject* GetIntersectObject(Ray &ray);
-		Color TraceRay(Ray &ray, int recursionDepth = 0);
+		Color InnerTraceRay(Ray &ray, int &rayRecursionDepth, int recursionDepth = 0);
 
 	public:
 		Scene() { }
@@ -40,7 +40,7 @@ class Scene
 		void AddLight(Light *light);
 		void AddObject(GeometryObject *object);
 
-		void Render(double viewDist, double viewSize, long hRes, long vRes);
+		Color TraceRay(Ray &ray, int &rayRecursionDepth);
 };
 
 

@@ -1,6 +1,6 @@
 /*
  * @file: main.cpp
- * @author: Ondrej Hirjak, 2009
+ * @author: Ondrej Hirjak, 2009-2010
  * @description: 
  */
 
@@ -8,6 +8,7 @@
 #include "colors.h"
 #include "geometries.h"
 #include "scene.h"
+#include "render.h"
 
 using namespace std;
 
@@ -38,8 +39,12 @@ int main()
 
 	initScene(scene);
 
-	scene->Render(20.0, 1.2, 1280, 720);
+	Render *render = new Render();
 
+	render->RenderScene(scene, 20.0, 1.2, 1280, 720);
+	render->OutputBuffers("output.bmp", "debug.bmp");
+
+	delete render;
 	delete scene;
 
 	return 0;
