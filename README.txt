@@ -1,6 +1,6 @@
-sucasny stav:
+status:
 
-- jednoduchy ray tracer (s pevnou maximalnou hlbkou rekurzie)
+- jednoduchy ray tracer (s nastavitelnou max. hlbkou rekurzie)
 - scena so statickymi objektami (gule, svetla) a statickou kamerou
 - vystup do .bmp
 

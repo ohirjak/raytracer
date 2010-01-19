@@ -11,8 +11,15 @@
 #include "render.h"
 
 
-Render::Render() : color_buffer(NULL), recursion_buffer(NULL)
+Render::Render(long init_hRes, long init_vRes)
 {
+	hRes = init_hRes;
+	vRes = init_vRes;
+
+	unsigned long size = hRes * vRes * 4;
+	color_buffer = new unsigned char[size];
+
+	recursion_buffer = new int[hRes * vRes];
 }
 
 
@@ -23,9 +30,9 @@ Render::~Render()
 }
 
 
-void Render::RenderScene(Scene *scene, double viewDist, double viewSize, long hRes, long vRes)
+void Render::RenderScene(Scene *scene, double viewDist, double viewSize)
 {
-	// TODO: Split to threads, GPUs, nodes
+	// Simple single-threaded renderer
 	// Renderer uses OpenGL right-handed coords
 
 	double aspectRatio = (double)hRes / vRes;
@@ -35,17 +42,7 @@ void Render::RenderScene(Scene *scene, double viewDist, double viewSize, long hR
 
 	Vector3D d = (Vector3D)rightBottom - leftTop;
 
-	delete color_buffer;
-	delete recursion_buffer;
-
-	output_hRes = hRes;
-	output_vRes = vRes;
-
-	unsigned long size = hRes * vRes * 4;
-	color_buffer = new unsigned char[size];
 	ColorRGBA *rgba_buffer = (ColorRGBA*) color_buffer;
-
-	recursion_buffer = new int[hRes * vRes];
 
 	// Y
 	for (long iterY = 0; iterY < vRes; iterY++)
@@ -106,9 +103,6 @@ struct BMP_header
 
 void Render::OutputBuffers(const char *color_output_file, const char *debug_output_file)
 {
-	long hRes = output_hRes;
-	long vRes = output_vRes;
-
 	// Outputs to BMP file output.bmp
 	BMP_header bmpHead;
 	bmpHead.magic[0] = 'B';

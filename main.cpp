@@ -9,6 +9,7 @@
 #include "geometries.h"
 #include "scene.h"
 #include "render.h"
+#include "renderMT.h"
 
 using namespace std;
 
@@ -39,9 +40,9 @@ int main()
 
 	initScene(scene);
 
-	Render *render = new Render();
+	Render *render = new RenderMT(1280, 720);
 
-	render->RenderScene(scene, 20.0, 1.2, 1280, 720);
+	render->RenderScene(scene, 20.0, 1.2);
 	render->OutputBuffers("output.bmp", "debug.bmp");
 
 	delete render;
