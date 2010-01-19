@@ -1,6 +1,8 @@
 status:
 
-- jednoduchy ray tracer (s nastavitelnou max. hlbkou rekurzie)
+- ray-tracer (s nastavitelnou max. hlbkou rekurzie)
+	- single-threaded implementacia
+	- multi-threaded implementacia
 - scena so statickymi objektami (gule, svetla) a statickou kamerou
 - vystup do .bmp
 
@@ -9,7 +11,7 @@ TODO:
 
 - nacitanie sceny zo suboru (objekty, kamera, pohlad, prip. 3D grid pre CT a pod.)
 - pridanie objektu kvader a "obdlznikova" rovina
-- implementovat na multicore, gpu (opencl/cuda), grid
+- implementovat na gpu (opencl/cuda), grid
 - zostavit "zakladnu scena" vizualizacie: Cornell Box
 - pouzit Stanford Bunny ako volumetricky model
 

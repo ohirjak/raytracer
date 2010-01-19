@@ -28,7 +28,7 @@ class Scene
 		list<Light *> lights;
 		list<GeometryObject *> objects;
 
-		GeometryObject* GetIntersectObject(Ray &ray);
+		GeometryObject* GetIntersectObject(Ray &ray, IntersectData *intersectData);
 		Color InnerTraceRay(Ray &ray, int &rayRecursionDepth, int recursionDepth = 0);
 
 	public:

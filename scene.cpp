@@ -42,14 +42,14 @@ void Scene::AddObject(GeometryObject *object)
 }
 
 
-GeometryObject* Scene::GetIntersectObject(Ray &ray)
+GeometryObject* Scene::GetIntersectObject(Ray &ray, IntersectData *intersectData)
 {
 	GeometryObject *object = NULL; // get closest intersecting object with ray
 	double t = INFINITY;
 
 	for (list<GeometryObject *>::const_iterator it = objects.begin(); it != objects.end(); ++it)
 	{
-		double tObject = (*it)->RayIntersect(ray);
+		double tObject = (*it)->RayIntersect(ray, intersectData);
 
 		if (tObject != INFINITY)
 		{
@@ -67,6 +67,7 @@ GeometryObject* Scene::GetIntersectObject(Ray &ray)
 
 Color Scene::InnerTraceRay(Ray &ray, int &rayRecursionDepth, int recursionDepth)
 {
+	IntersectData intersectData;
 	rayRecursionDepth = recursionDepth;
 
 	// Hit recursion depth
@@ -78,7 +79,7 @@ Color Scene::InnerTraceRay(Ray &ray, int &rayRecursionDepth, int recursionDepth)
 		return Color(0.0, 0.0, 0.0, 0.0);
 	}
 
-	GeometryObject *object = GetIntersectObject(ray); // get closest intersecting object with ray
+	GeometryObject *object = GetIntersectObject(ray, &intersectData); // get closest intersecting object with ray
 
 	// Nothing hit
 	if (object == NULL)
@@ -95,7 +96,9 @@ Color Scene::InnerTraceRay(Ray &ray, int &rayRecursionDepth, int recursionDepth)
 	Point3D point; // Get intersection point
 	Vector3D pointNormal; // Get objects normal at intersect
 
-	object->GetPointStats(point, pointNormal, pointColor);
+	point = intersectData.contact;
+	pointNormal = intersectData.normal;
+	pointColor = intersectData.color;
 
 	if (object->GetReflection() > 0.0)
 	{
@@ -124,7 +127,7 @@ Color Scene::InnerTraceRay(Ray &ray, int &rayRecursionDepth, int recursionDepth)
 		// Check for obstruction
 		Ray toLightRay = Ray((Vector3D)point + lightNormal * 0.01, lightNormal);
 
-		if (GetIntersectObject(toLightRay) != NULL)
+		if (GetIntersectObject(toLightRay, NULL) != NULL)
 			dp = 0.0;
 		else
 		{

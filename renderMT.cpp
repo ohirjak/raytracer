@@ -24,7 +24,6 @@ RenderMT::~RenderMT()
 
 void* RenderMT::RenderThread(void *attr)
 {
-	// TODO: Bugged, probably because of static.
 	RenderData *rd = (RenderData*)attr;
 	double aspectRatio = (double)rd->render->hRes / rd->render->vRes;
 	Point3D eye = Point3D(0.0, 0.0, rd->viewDist);
@@ -77,26 +76,27 @@ void RenderMT::RenderScene(Scene *scene, double viewDist, double viewSize)
 	// Multi-threaded renderer
 	// Renderer uses OpenGL right-handed coords
 
-	// Creating 2 threads for now
-	RenderData rd1, rd2;
+	// Creating 4 threads for now
+	const int thread_count = 4;
+	int i;
+	RenderData rd[thread_count];
 
-	rd1.scene = scene;
-	rd1.render = this;
-	rd1.part1 = 0;
-	rd1.part2 = vRes / 2;
-	rd1.viewDist = viewDist;
-	rd1.viewSize = viewSize;
+	for (i = 0; i < thread_count; i++)
+	{
+		rd[i].scene = scene;
+		rd[i].render = this;
+		rd[i].part1 = i * vRes / thread_count;
+		rd[i].part2 = (i + 1) * vRes / thread_count;
+		rd[i].viewDist = viewDist;
+		rd[i].viewSize = viewSize;
+	}
 
-	rd2 = rd1;
-	rd2.part1 = rd1.part1 + 1;
-	rd2.part2 = vRes;
+	pthread_t threads[thread_count];
 
-	pthread_t threads[2];
+	for (i = 0; i < thread_count; i++)
+		pthread_create(&threads[i], NULL, RenderThread, &rd[i]);
 
-	pthread_create(&threads[0], NULL, RenderThread, &rd1);
-	pthread_create(&threads[1], NULL, RenderThread, &rd2);
-
-	pthread_join(threads[0], NULL);
-	pthread_join(threads[1], NULL);
+	for (i = 0; i < thread_count; i++)
+		pthread_join(threads[i], NULL);
 }
 

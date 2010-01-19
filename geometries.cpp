@@ -42,7 +42,7 @@ Vector3D Vector3D::operator *(double t)
 }
 
 
-double Sphere::RayIntersect(Ray &ray)
+double Sphere::RayIntersect(Ray &ray, IntersectData *intersectData)
 {
 	double A = 1.0; // normalized ray vector
 	double B = 2.0 * (ray.Vector().x * (ray.Point().x - center.x) + ray.Vector().y * (ray.Point().y - center.y) + ray.Vector().z * (ray.Point().z - center.z));
@@ -55,9 +55,16 @@ double Sphere::RayIntersect(Ray &ray)
 
 		if (t > 0.0)
 		{
-			contact = (Vector3D)ray.Point() + ray.Vector() * t;
-			normal = (Vector3D)contact - center;
-			normal = normal.Normalize();
+			if (intersectData)
+			{
+				Point3D contact = (Vector3D)ray.Point() + ray.Vector() * t;
+				Vector3D normal = (Vector3D)contact - center;
+				normal = normal.Normalize();
+
+				intersectData->contact = contact;
+				intersectData->normal = normal;
+				intersectData->color = color;
+			}
 
 			return t;
 		}
@@ -66,22 +73,21 @@ double Sphere::RayIntersect(Ray &ray)
 
 		if (t > 0.0)
 		{
-			contact = (Vector3D)ray.Point() + ray.Vector() * t;
-			normal = (Vector3D)contact - center;
-			normal = normal.Normalize();
+			if (intersectData)
+			{
+				Point3D contact = (Vector3D)ray.Point() + ray.Vector() * t;
+				Vector3D normal = (Vector3D)contact - center;
+				normal = normal.Normalize();
 
-			return t;
+				intersectData->contact = contact;
+				intersectData->normal = normal;
+				intersectData->color = color;
+
+				return t;
+			}
 		}
 	}
 
 	return INFINITY;
-}
-
-
-void Sphere::GetPointStats(Point3D &pPoint, Vector3D &pNormal, Color &pColor)
-{
-	pPoint = contact;
-	pNormal = normal;
-	pColor = color;
 }
 

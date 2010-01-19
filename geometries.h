@@ -74,6 +74,14 @@ class Ray
 };
 
 
+struct IntersectData
+{
+	Point3D contact;
+	Vector3D normal;
+	Color color;
+};
+
+
 class GeometryObject
 {
 	protected:
@@ -105,8 +113,7 @@ class GeometryObject
 			return refraction;
 		}
 
-		virtual double RayIntersect(Ray &ray) = 0;
-		virtual void GetPointStats(Point3D &pPoint, Vector3D &pNormal, Color &pColor) = 0;
+		virtual double RayIntersect(Ray &ray, IntersectData *intersectData) = 0;
 };
 
 
@@ -115,15 +122,10 @@ class Sphere : public GeometryObject
 	private:
 		double radius;
 
-		// Last intersection data
-		Point3D contact;
-		Vector3D normal;
-
 	public:
 		Sphere(Point3D p, Color c, double r) : GeometryObject(p, c), radius(r) { }
 
-		double RayIntersect(Ray &ray);
-		void GetPointStats(Point3D &pPoint, Vector3D &pNormal, Color &pColor);
+		double RayIntersect(Ray &ray, IntersectData *intersectData);
 };
 
 // TODO: Implement block and plane
