@@ -5,6 +5,7 @@
  */
 
 #include <iostream>
+#include "colors.h"
 #include "geometries.h"
 #include "scene.h"
 

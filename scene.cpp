@@ -7,10 +7,14 @@
 #include <iostream>
 #include <math.h>
 #include <stdio.h>
+#include "colors.h"
 #include "geometries.h"
 #include "scene.h"
 
 using namespace std;
+
+
+const int MAX_RECURSION_DEPTH = 10;
 
 
 void Scene::ClearScene()
@@ -65,9 +69,9 @@ GeometryObject* Scene::GetIntersectObject(Ray &ray)
 Color Scene::TraceRay(Ray &ray, int recursionDepth)
 {
 	// Hit recursion depth
-	if (recursionDepth > 10)
+	if (recursionDepth > MAX_RECURSION_DEPTH)
 	{
-		cout << "Hit recursion depth 10" << endl;
+		cout << "Hit recursion depth " << MAX_RECURSION_DEPTH << endl;
 		// Return backgound color
 		return Color(0.0, 0.0, 0.0, 0.0);
 	}

@@ -7,7 +7,7 @@ CPP = g++
 CXXFLAGS = -pipe -Wall -g
 LDFLAGS = -pipe
 LIBS =
-SRC = main.cpp geometries.cpp scene.cpp
+SRC = colors.cpp geometries.cpp main.cpp scene.cpp
 OUT = raytracer
 
 .PHONY: all build optimized tags clean distclean
