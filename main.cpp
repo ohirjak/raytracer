@@ -4,14 +4,12 @@
  * @description: 
  */
 
-#include <iostream>
+#include "main.h"
 #include "colors.h"
 #include "geometries.h"
 #include "scene.h"
 #include "render.h"
 #include "renderMT.h"
-
-using namespace std;
 
 
 void initScene(Scene *s)
@@ -34,15 +32,54 @@ void initScene(Scene *s)
 }
 
 
+timespec diff(timespec start, timespec end)
+{
+	timespec temp;
+	if ((end.tv_nsec-start.tv_nsec)<0) {
+		temp.tv_sec = end.tv_sec-start.tv_sec-1;
+		temp.tv_nsec = 1000000000+end.tv_nsec-start.tv_nsec;
+	} else {
+		temp.tv_sec = end.tv_sec-start.tv_sec;
+		temp.tv_nsec = end.tv_nsec-start.tv_nsec;
+	}
+	return temp;
+}
+
+
 int main()
 {
 	Scene *scene = new Scene();
 
 	initScene(scene);
 
-	Render *render = new RenderMT(1280, 720);
+	const int sizeX = 1280, sizeY = 720;
 
+	printf("Render size = %d:%d\n", sizeX, sizeY);
+
+	Render *render = new Render(sizeX, sizeY);
+
+	timespec ts1, ts2, res;
+
+	clock_gettime(CLOCK_MONOTONIC, &ts1);
 	render->RenderScene(scene, 20.0, 1.2);
+	clock_gettime(CLOCK_MONOTONIC, &ts2);
+
+	res = diff(ts1, ts2);
+
+	printf("Run time in ms %ld%03ld.%ld\n", (long)res.tv_sec, res.tv_nsec / 1000000, res.tv_nsec % 1000000);
+
+	delete render;
+
+	render = new RenderMT(sizeX, sizeY);
+
+	clock_gettime(CLOCK_MONOTONIC, &ts1);
+	render->RenderScene(scene, 20.0, 1.2);
+	clock_gettime(CLOCK_MONOTONIC, &ts2);
+
+	res = diff(ts1, ts2);
+
+	printf("Run time (MT) in ms %ld%03ld.%ld\n", (long)res.tv_sec, res.tv_nsec / 1000000, res.tv_nsec % 1000000);
+
 	render->OutputBuffers("output.bmp", "debug.bmp");
 
 	delete render;

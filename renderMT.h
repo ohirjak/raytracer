@@ -16,6 +16,7 @@ class RenderMT : public Render
 		RenderMT *render;
 		long part1;
 		long part2;
+		int cpu;
 
 		double viewDist;
 		double viewSize;

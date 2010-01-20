@@ -4,7 +4,7 @@
  * @description: Multi-threaded renderer.
  */
 
-#include <pthread.h>
+#include "main.h"
 #include "colors.h"
 #include "geometries.h"
 #include "scene.h"
@@ -25,6 +25,20 @@ RenderMT::~RenderMT()
 void* RenderMT::RenderThread(void *attr)
 {
 	RenderData *rd = (RenderData*)attr;
+	/*cpu_set_t cpuset;
+	pthread_t thread;
+
+	// Set thread affinity
+	thread = pthread_self();
+
+	CPU_ZERO(&cpuset);
+	CPU_SET(rd->cpu % 2, &cpuset); // TODO: use actual number of cores
+	cout << "part " << rd->part1 << "-" << rd->part2 << ", cpu " << rd->cpu << endl;
+
+	if (pthread_setaffinity_np(thread, sizeof(cpu_set_t), &cpuset))
+		cerr << "setaffinity error" << endl;*/
+
+	// Perform rendering
 	double aspectRatio = (double)rd->render->hRes / rd->render->vRes;
 	Point3D eye = Point3D(0.0, 0.0, rd->viewDist);
 	Point3D leftTop = Point3D(-rd->viewSize * aspectRatio, rd->viewSize, 0.0);
@@ -32,7 +46,10 @@ void* RenderMT::RenderThread(void *attr)
 
 	Vector3D d = (Vector3D)rightBottom - leftTop;
 
-	ColorRGBA *rgba_buffer = (ColorRGBA*) rd->render->color_buffer;
+	ColorBGRA *rgba_buffer = (ColorBGRA*) rd->render->color_buffer;
+
+	timespec ts1, ts2, res;
+	clock_gettime(CLOCK_MONOTONIC, &ts1);
 
 	// Y
 	for (long iterY = rd->part1; iterY < rd->part2; iterY++)
@@ -50,22 +67,21 @@ void* RenderMT::RenderThread(void *attr)
 			color = color.Cap();
 			//cout << "Color " << color.r << "," << color.g << "," << color.b << endl;
 
-			unsigned char outColor[4];
-
-			outColor[0] = color.b * 255;
-			outColor[1] = color.g * 255;
-			outColor[2] = color.r * 255;
-			outColor[3] = color.a * 255;
-
 			// write color
-			rgba_buffer[iterY * rd->render->hRes + iterX].x.R = outColor[0];
-			rgba_buffer[iterY * rd->render->hRes + iterX].x.G = outColor[1];
-			rgba_buffer[iterY * rd->render->hRes + iterX].x.B = outColor[2];
-			rgba_buffer[iterY * rd->render->hRes + iterX].x.A = outColor[3];
+			rgba_buffer[iterY * rd->render->hRes + iterX].x.R = color.r * 255;
+			rgba_buffer[iterY * rd->render->hRes + iterX].x.G = color.g * 255;
+			rgba_buffer[iterY * rd->render->hRes + iterX].x.B = color.b * 255;
+			rgba_buffer[iterY * rd->render->hRes + iterX].x.A = color.a * 255;
 
 			rd->render->recursion_buffer[iterY * rd->render->hRes + iterX] = recDepth;
 		}
 	}
+
+	clock_gettime(CLOCK_MONOTONIC, &ts2);
+
+	res = diff(ts1, ts2);
+
+	printf("Render time (MT), cpu %d in ms %ld%03ld.%ld\n", rd->cpu, (long)res.tv_sec, res.tv_nsec / 1000000, res.tv_nsec % 1000000);
 
 	return NULL;
 }
@@ -76,8 +92,8 @@ void RenderMT::RenderScene(Scene *scene, double viewDist, double viewSize)
 	// Multi-threaded renderer
 	// Renderer uses OpenGL right-handed coords
 
-	// Creating 4 threads for now
-	const int thread_count = 4;
+	// Creating 3 threads for now
+	const int thread_count = 3;
 	int i;
 	RenderData rd[thread_count];
 
@@ -87,6 +103,7 @@ void RenderMT::RenderScene(Scene *scene, double viewDist, double viewSize)
 		rd[i].render = this;
 		rd[i].part1 = i * vRes / thread_count;
 		rd[i].part2 = (i + 1) * vRes / thread_count;
+		rd[i].cpu = i;
 		rd[i].viewDist = viewDist;
 		rd[i].viewSize = viewSize;
 	}

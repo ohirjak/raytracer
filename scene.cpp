@@ -4,13 +4,10 @@
  * @description: 
  */
 
-#include <iostream>
-#include <math.h>
+#include "main.h"
 #include "colors.h"
 #include "geometries.h"
 #include "scene.h"
-
-using namespace std;
 
 
 const int MAX_RECURSION_DEPTH = 10;
@@ -73,7 +70,7 @@ Color Scene::InnerTraceRay(Ray &ray, int &rayRecursionDepth, int recursionDepth)
 	// Hit recursion depth
 	if (recursionDepth > MAX_RECURSION_DEPTH)
 	{
-		cout << "Hit recursion depth " << MAX_RECURSION_DEPTH << endl;
+		printf("Hit recursion depth %d\n", MAX_RECURSION_DEPTH);
 
 		// Return backgound color
 		return Color(0.0, 0.0, 0.0, 0.0);

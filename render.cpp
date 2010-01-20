@@ -4,7 +4,7 @@
  * @description: Generic renderer implementation.
  */
 
-#include <stdio.h>
+#include "main.h"
 #include "colors.h"
 #include "geometries.h"
 #include "scene.h"
@@ -44,6 +44,9 @@ void Render::RenderScene(Scene *scene, double viewDist, double viewSize)
 
 	ColorRGBA *rgba_buffer = (ColorRGBA*) color_buffer;
 
+	timespec ts1, ts2, res;
+	clock_gettime(CLOCK_MONOTONIC, &ts1);
+
 	// Y
 	for (long iterY = 0; iterY < vRes; iterY++)
 	{
@@ -76,6 +79,12 @@ void Render::RenderScene(Scene *scene, double viewDist, double viewSize)
 			recursion_buffer[iterY * hRes + iterX] = recDepth;
 		}
 	}
+
+	clock_gettime(CLOCK_MONOTONIC, &ts2);
+
+	res = diff(ts1, ts2);
+
+	printf("Render time in ms %ld%03ld.%ld\n", (long)res.tv_sec, res.tv_nsec / 1000000, res.tv_nsec % 1000000);
 }
 
 

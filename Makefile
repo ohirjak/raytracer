@@ -8,7 +8,7 @@
 CPP = g++
 CXXFLAGS = -pipe -Wall -g
 LDFLAGS = -pipe
-LIBS = -lpthread
+LIBS = -lpthread -lrt
 SRC = colors.cpp geometries.cpp main.cpp render.cpp renderGPU.cpp renderGrid.cpp renderMT.cpp scene.cpp
 OUT = raytracer
 OUTPUTS = output.bmp debug.bmp
