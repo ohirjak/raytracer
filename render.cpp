@@ -161,7 +161,7 @@ void Render::OutputBuffers(const char *color_output_file, const char *debug_outp
 		for (long iterX = 0; iterX < hRes; iterX++)
 		{
 			// Exchanged top & bottom because of BMP bitmap layout
-			fwrite(&rgba_buffer[(vRes - iterY) * hRes + iterX], 4, 1, bmpOut);
+			fwrite(&rgba_buffer[(vRes - iterY -1) * hRes + iterX], 4, 1, bmpOut);
 		}
 	}
 
