@@ -1,7 +1,7 @@
 /*
  * @file: main.h
  * @author: Ondrej Hirjak, 2010
- * @description: Generic functions
+ * @description: Common includes and functions.
  */
 
 #ifndef main_h

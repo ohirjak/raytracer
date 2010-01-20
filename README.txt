@@ -9,6 +9,7 @@ status:
 
 TODO:
 
+- pouzit 4x4, 16x16 strukturu pamate (blocklinear)
 - nacitanie sceny zo suboru (objekty, kamera, pohlad, prip. 3D grid pre CT a pod.)
 - pridanie objektu kvader a "obdlznikova" rovina
 - implementovat na gpu (opencl/cuda), grid

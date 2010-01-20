@@ -12,6 +12,32 @@
 #include "renderMT.h"
 
 
+struct VideoMode
+{
+	char short_name[6];
+	char name[14];
+	int sizeW;
+	int sizeH;
+};
+
+
+const struct VideoMode videoModes[] =
+{
+	{ "576p2", "704x576",      704, 576 },
+	{ "720p",  "1280×720 HD",  1280, 720 },
+	{ "1080i", "1440×1080 HD", 1440, 1080 },
+	{ "1080p", "1920×1080 HD", 1920, 1080 },
+	{ "2K",    "2048x1536",    2048, 1536 },
+	{ "2160p", "3840×2160",    3840, 2160 },
+	{ "4K",    "4096x3072",    4096, 3072 },
+	{ "2540p", "4520x2540",    4520, 2540 },
+	{ "4320p", "7680x4320",    7680, 4320 }
+};
+
+
+const int modeCount = 9;
+
+
 void initScene(Scene *s)
 {
 	// TODO: Load scene conf. from file
@@ -52,11 +78,11 @@ int main()
 
 	initScene(scene);
 
-	const int sizeX = 1280, sizeY = 720;
+	const int videoMode = modeCount -1;
 
-	printf("Render size = %d:%d\n", sizeX, sizeY);
+	printf("Render size = %dx%d\n", videoModes[videoMode].sizeW, videoModes[videoMode].sizeH);
 
-	Render *render = new Render(sizeX, sizeY);
+	Render *render = new Render(videoModes[videoMode].sizeW, videoModes[videoMode].sizeH);
 
 	timespec ts1, ts2, res;
 
@@ -70,7 +96,7 @@ int main()
 
 	delete render;
 
-	render = new RenderMT(sizeX, sizeY);
+	render = new RenderMT(videoModes[videoMode].sizeW, videoModes[videoMode].sizeH);
 
 	clock_gettime(CLOCK_MONOTONIC, &ts1);
 	render->RenderScene(scene, 20.0, 1.2);
@@ -84,6 +110,8 @@ int main()
 
 	delete render;
 	delete scene;
+
+	printf("GOAL: < 33.33ms for minimum performance, < 16.66ms for optimal performance, < 8.33ms for 3D experience.\n");
 
 	return 0;
 }
