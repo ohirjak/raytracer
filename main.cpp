@@ -78,7 +78,7 @@ int main()
 
 	initScene(scene);
 
-	const int videoMode = modeCount -1;
+	const int videoMode = 3;
 
 	printf("Render size = %dx%d\n", videoModes[videoMode].sizeW, videoModes[videoMode].sizeH);
 

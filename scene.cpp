@@ -10,6 +10,7 @@
 #include "scene.h"
 
 
+// Maximum recursion depth can be 255
 const int MAX_RECURSION_DEPTH = 10;
 
 

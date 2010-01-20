@@ -12,7 +12,7 @@ class Render
 {
 	protected:
 		unsigned char *color_buffer;
-		int *recursion_buffer;
+		unsigned char *recursion_buffer;
 
 		long hRes, vRes;
 

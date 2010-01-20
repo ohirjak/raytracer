@@ -19,7 +19,7 @@ Render::Render(long init_hRes, long init_vRes)
 	unsigned long size = hRes * vRes * 4;
 	color_buffer = new unsigned char[size];
 
-	recursion_buffer = new int[hRes * vRes];
+	recursion_buffer = new unsigned char[hRes * vRes];
 }
 
 
