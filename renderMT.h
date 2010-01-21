@@ -14,8 +14,8 @@ class RenderMT : public Render
 	{
 		Scene *scene;
 		RenderMT *render;
-		long part1;
-		long part2;
+		int part1;
+		int part2;
 		int cpu;
 
 		double viewDist;

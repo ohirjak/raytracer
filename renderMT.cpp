@@ -25,18 +25,18 @@ RenderMT::~RenderMT()
 void* RenderMT::RenderThread(void *attr)
 {
 	RenderData *rd = (RenderData*)attr;
-	/*cpu_set_t cpuset;
+	cpu_set_t cpuset;
 	pthread_t thread;
 
 	// Set thread affinity
 	thread = pthread_self();
 
 	CPU_ZERO(&cpuset);
-	CPU_SET(rd->cpu % 2, &cpuset); // TODO: use actual number of cores
-	cout << "part " << rd->part1 << "-" << rd->part2 << ", cpu " << rd->cpu << endl;
+	CPU_SET(rd->cpu, &cpuset);
+	printf("part %d-%d, cpu %d\n", rd->part1, rd->part2, rd->cpu);
 
 	if (pthread_setaffinity_np(thread, sizeof(cpu_set_t), &cpuset))
-		cerr << "setaffinity error" << endl;*/
+		fprintf(stderr, "setaffinity error\n");
 
 	// Perform rendering
 	double aspectRatio = (double)rd->render->hRes / rd->render->vRes;
@@ -92,8 +92,16 @@ void RenderMT::RenderScene(Scene *scene, double viewDist, double viewSize)
 	// Multi-threaded renderer
 	// Renderer uses OpenGL right-handed coords
 
-	// Creating 3 threads for now
-	const int thread_count = 3;
+	// Get CPU count and create one thread for each of them
+	int thread_count = sysconf(_SC_NPROCESSORS_ONLN);
+
+	// Error occured, set only 1 thread
+	if (thread_count == -1)
+	{
+		fprintf(stderr, "Cannot get CPU count, defaulting to 1.\n");
+		thread_count = 1;
+	}
+
 	int i;
 	RenderData rd[thread_count];
 

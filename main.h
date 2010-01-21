@@ -11,6 +11,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <time.h>
+#include <unistd.h>
 
 
 timespec diff(timespec start, timespec end);
