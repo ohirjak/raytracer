@@ -86,6 +86,8 @@ Color Scene::InnerTraceRay(Ray &ray, int &rayRecursionDepth, int recursionDepth)
 		return Color(0.0, 0.0, 0.0, 0.0);
 	}
 
+	rayRecursionDepth = recursionDepth + 1;
+
 	Color pointColor; // Get objects color at intersect
 	Color reflectColor; // get reflected ray color
 	bool reflection = false;

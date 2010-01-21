@@ -24,6 +24,12 @@ class Light
 
 class Scene
 {
+	struct StatData
+	{
+		int recDepth;
+		int lightCount;
+	};
+
 	private:
 		list<Light *> lights;
 		list<GeometryObject *> objects;
