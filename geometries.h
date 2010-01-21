@@ -128,7 +128,13 @@ class Sphere : public GeometryObject
 		double RayIntersect(Ray &ray, IntersectData *intersectData);
 };
 
-// TODO: Implement block and plane
+
+class Plane; // TODO
+class Triangle; // TODO
+class Polygon; // TODO
+class Box; // TODO
+class Cylinder; // TODO
+class Quadric; // TODO
 
 
 #endif // geometries_h

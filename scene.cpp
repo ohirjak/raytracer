@@ -103,7 +103,8 @@ Color Scene::InnerTraceRay(Ray &ray, int &rayRecursionDepth, int recursionDepth)
 		double c1 = -Vector3D::DotProduct(pointNormal, ray.Vector());
 		Vector3D Rl = ray.Vector() + (pointNormal * 2 * c1);
 
-		Ray reflectedRay = Ray((Vector3D)point + Rl * 0.01, Rl);
+		// Prevents auto-reflection with a offset 0.001
+		Ray reflectedRay = Ray((Vector3D)point + Rl * 0.001, Rl);
 
 		reflectColor = InnerTraceRay(reflectedRay, rayRecursionDepth, recursionDepth + 1);
 
