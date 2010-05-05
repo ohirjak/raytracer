@@ -23,6 +23,8 @@ struct VideoMode
 
 const struct VideoMode videoModes[] =
 {
+/*	{ "180", "320x180",        320, 180 },
+	{ "360", "640x360",        640, 360 },*/
 	{ "576p2", "704x576",      704, 576 },
 	{ "720p",  "1280×720 HD",  1280, 720 },
 	{ "1080i", "1440×1080 HD", 1440, 1080 },
@@ -78,7 +80,7 @@ int main()
 
 	initScene(scene);
 
-	const int videoMode = 3;
+	const int videoMode = 1;
 
 	printf("Render size = %dx%d\n", videoModes[videoMode].sizeW, videoModes[videoMode].sizeH);
 
@@ -87,7 +89,7 @@ int main()
 	timespec ts1, ts2, res;
 
 	clock_gettime(CLOCK_MONOTONIC, &ts1);
-	render->RenderScene(scene, 20.0, 1.2);
+	render->RenderScene(scene, 5.0, 1.2);
 	clock_gettime(CLOCK_MONOTONIC, &ts2);
 
 	res = diff(ts1, ts2);
@@ -99,7 +101,7 @@ int main()
 	render = new RenderMT(videoModes[videoMode].sizeW, videoModes[videoMode].sizeH);
 
 	clock_gettime(CLOCK_MONOTONIC, &ts1);
-	render->RenderScene(scene, 20.0, 1.2);
+	render->RenderScene(scene, 5.0, 1.2);
 	clock_gettime(CLOCK_MONOTONIC, &ts2);
 
 	res = diff(ts1, ts2);
