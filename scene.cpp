@@ -68,6 +68,7 @@ Color Scene::InnerTraceRay(Ray &ray, int &rayRecursionDepth, int recursionDepth)
 	IntersectData intersectData;
 	rayRecursionDepth = recursionDepth;
 
+	// FIXME: Add profiling
 	// Hit recursion depth
 	if (recursionDepth > MAX_RECURSION_DEPTH)
 	{

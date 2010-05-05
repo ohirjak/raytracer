@@ -48,6 +48,8 @@ void* RenderMT::RenderThread(void *attr)
 
 	ColorBGRA *rgba_buffer = (ColorBGRA*) rd->render->color_buffer;
 
+	// FIXME: For better performance implement load-balancing
+
 	timespec ts1, ts2, res;
 	clock_gettime(CLOCK_MONOTONIC, &ts1);
 
