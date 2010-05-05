@@ -9,11 +9,15 @@ status:
 
 TODO:
 
+- pridat plane a zobrazenie pozicie svetla
 - pouzit 16x16 strukturu pamate (blocklinear)
 - nacitanie sceny zo suboru (objekty, kamera, pohlad, prip. 3D grid pre CT a pod.)
 - implementovat na gpu (opencl/cuda), grid
 - zostavit "zakladnu scena" vizualizacie: Cornell Box
 - pouzit Stanford Bunny ako volumetricky model
+- pouzit standardny rasterizer renderer na urcenie visibility a hit-ov
+- spojit s inymi oblastami, ktore potrebuju vypocet occlusion a pod. (sound?)
+- "ina" matematika, ktora by riesila tieto problemy by default
 
 - Refraction
 - Photon Mapping
