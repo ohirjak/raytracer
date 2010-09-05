@@ -1,0 +1,13 @@
+V2 Engine 2006 - 2010
+
+
+>>> Engine Source Code - TODO:
+
+- konceptualna zmena:
+	- odstranenie komplikovanych C++ konstrukcii (casty, vynimky)
+	- zamena STL za svoje triedy
+	- vytvorenie vseobecneho frameworku na pracu s OpenGL - pouzite GLSL
+	- pridanie podpory unicode
+	- pridanie manazmentu threadov
+
+- aplikacna funkcionalita - klientska aplikacia frameworku
