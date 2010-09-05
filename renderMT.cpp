@@ -4,7 +4,7 @@
  * @description: Multi-threaded renderer.
  */
 
-#include "main.h"
+#include "V2Base.h"
 #include "colors.h"
 #include "geometries.h"
 #include "scene.h"
@@ -22,21 +22,12 @@ RenderMT::~RenderMT()
 }
 
 
-void* RenderMT::RenderThread(void *attr)
+void RenderMT::RenderThread(const V2::Thread *thread, void *attr)
 {
 	RenderData *rd = (RenderData*)attr;
-	cpu_set_t cpuset;
-	pthread_t thread;
 
 	// Set thread affinity
-	thread = pthread_self();
-
-	CPU_ZERO(&cpuset);
-	CPU_SET(rd->cpu, &cpuset);
-	printf("part %d-%d, cpu %d\n", rd->part1, rd->part2, rd->cpu);
-
-	if (pthread_setaffinity_np(thread, sizeof(cpu_set_t), &cpuset))
-		fprintf(stderr, "setaffinity error\n");
+	thread->SetThreadAffinity(rd->cpu);
 
 	// Perform rendering
 	double aspectRatio = (double)rd->render->hRes / rd->render->vRes;
@@ -50,8 +41,8 @@ void* RenderMT::RenderThread(void *attr)
 
 	// FIXME: For better performance implement load-balancing
 
-	timespec ts1, ts2, res;
-	clock_gettime(CLOCK_MONOTONIC, &ts1);
+	float time1, time2, res;
+	time1 = V2::GetTime();
 
 	// Y
 	for (long iterY = rd->part1; iterY < rd->part2; iterY++)
@@ -70,22 +61,20 @@ void* RenderMT::RenderThread(void *attr)
 			//cout << "Color " << color.r << "," << color.g << "," << color.b << endl;
 
 			// write color
-			rgba_buffer[iterY * rd->render->hRes + iterX].x.R = color.r * 255;
-			rgba_buffer[iterY * rd->render->hRes + iterX].x.G = color.g * 255;
-			rgba_buffer[iterY * rd->render->hRes + iterX].x.B = color.b * 255;
-			rgba_buffer[iterY * rd->render->hRes + iterX].x.A = color.a * 255;
+			rgba_buffer[iterY * rd->render->hRes + iterX].x.R = (unsigned char)(color.r * 255);
+			rgba_buffer[iterY * rd->render->hRes + iterX].x.G = (unsigned char)(color.g * 255);
+			rgba_buffer[iterY * rd->render->hRes + iterX].x.B = (unsigned char)(color.b * 255);
+			rgba_buffer[iterY * rd->render->hRes + iterX].x.A = (unsigned char)(color.a * 255);
 
 			rd->render->recursion_buffer[iterY * rd->render->hRes + iterX] = recDepth;
 		}
 	}
 
-	clock_gettime(CLOCK_MONOTONIC, &ts2);
+	time2 = V2::GetTime();
 
-	res = diff(ts1, ts2);
+	res = time2 - time1;
 
-	printf("Render time (MT), cpu %d in ms %ld%03ld.%ld\n", rd->cpu, (long)res.tv_sec, res.tv_nsec / 1000000, res.tv_nsec % 1000000);
-
-	return NULL;
+	printf("Render time (MT), cpu %d in ms %3.3f\n", rd->cpu, res);
 }
 
 
@@ -95,7 +84,7 @@ void RenderMT::RenderScene(Scene *scene, double viewDist, double viewSize)
 	// Renderer uses OpenGL right-handed coords
 
 	// Get CPU count and create one thread for each of them
-	int thread_count = sysconf(_SC_NPROCESSORS_ONLN);
+	int thread_count = V2::Thread::GetProcessorNumber();
 
 	// Error occured, set only 1 thread
 	if (thread_count == -1)
@@ -105,7 +94,7 @@ void RenderMT::RenderScene(Scene *scene, double viewDist, double viewSize)
 	}
 
 	int i;
-	RenderData rd[thread_count];
+	RenderData *rd = new RenderData[thread_count];
 
 	for (i = 0; i < thread_count; i++)
 	{
@@ -118,12 +107,19 @@ void RenderMT::RenderScene(Scene *scene, double viewDist, double viewSize)
 		rd[i].viewSize = viewSize;
 	}
 
-	pthread_t threads[thread_count];
+	V2::Thread **threads = new V2::Thread*[thread_count];
 
-	for (i = 0; i < thread_count; i++)
-		pthread_create(&threads[i], NULL, RenderThread, &rd[i]);
+	// Execute threads
+	for (i = 0; i < thread_count; i++) {
+		threads[i] = new V2::Thread(RenderThread, &rd[i]);
+	}
 
-	for (i = 0; i < thread_count; i++)
-		pthread_join(threads[i], NULL);
+	// Wait for threads to finish and delete
+	for (i = 0; i < thread_count; i++) {
+		delete threads[i];
+	}
+
+	delete [] threads;
+	delete [] rd;
 }
 

@@ -4,7 +4,8 @@
  * @description: Generic renderer implementation.
  */
 
-#include "main.h"
+#include "V2Base.h"
+#include "V2File.h"
 #include "colors.h"
 #include "geometries.h"
 #include "scene.h"
@@ -44,8 +45,8 @@ void Render::RenderScene(Scene *scene, double viewDist, double viewSize)
 
 	ColorRGBA *rgba_buffer = (ColorRGBA*) color_buffer;
 
-	timespec ts1, ts2, res;
-	clock_gettime(CLOCK_MONOTONIC, &ts1);
+	float time1, time2, res;
+	time1 = V2::GetTime();
 
 	// Y
 	for (long iterY = 0; iterY < vRes; iterY++)
@@ -65,10 +66,10 @@ void Render::RenderScene(Scene *scene, double viewDist, double viewSize)
 
 			unsigned char outColor[4];
 
-			outColor[0] = color.b * 255;
-			outColor[1] = color.g * 255;
-			outColor[2] = color.r * 255;
-			outColor[3] = color.a * 255;
+			outColor[0] = (unsigned char)(color.b * 255);
+			outColor[1] = (unsigned char)(color.g * 255);
+			outColor[2] = (unsigned char)(color.r * 255);
+			outColor[3] = (unsigned char)(color.a * 255);
 
 			// write color
 			rgba_buffer[iterY * hRes + iterX].x.R = outColor[0];
@@ -80,11 +81,11 @@ void Render::RenderScene(Scene *scene, double viewDist, double viewSize)
 		}
 	}
 
-	clock_gettime(CLOCK_MONOTONIC, &ts2);
+	time2 = V2::GetTime();
 
-	res = diff(ts1, ts2);
+	res = time2 - time1;
 
-	printf("Render time in ms %ld%03ld.%ld\n", (long)res.tv_sec, res.tv_nsec / 1000000, res.tv_nsec % 1000000);
+	printf("Render time in ms %3.3f\n", res);
 }
 
 
@@ -132,25 +133,30 @@ void Render::OutputBuffers(const char *color_output_file, const char *debug_outp
 	bmpHead.colors = 0;
 	bmpHead.iColors = 0;
 
-	FILE *bmpOut = fopen(color_output_file, "w");
+	V2::File *bmpOut = new V2::File(color_output_file, V2::FileOpenMode::kFileCreate);
 
-	fwrite(&bmpHead.magic, 2, 1, bmpOut);
-	fwrite(&bmpHead.size, 4, 1, bmpOut);
-	fwrite(&bmpHead.reserved1, 2, 1, bmpOut);
-	fwrite(&bmpHead.reserved2, 2, 1, bmpOut);
-	fwrite(&bmpHead.offset, 4, 1, bmpOut);
+	if (bmpOut->GetResultCode() != V2::FileResult::kFileOkay) {
+		printf("Failed to output %s.\n", color_output_file);
+		return;
+	}
 
-	fwrite(&bmpHead.headerSize, 4, 1, bmpOut);
-	fwrite(&bmpHead.width, 4, 1, bmpOut);
-	fwrite(&bmpHead.height, 4, 1, bmpOut);
-	fwrite(&bmpHead.planes, 2, 1, bmpOut);
-	fwrite(&bmpHead.bpp, 2, 1, bmpOut);
-	fwrite(&bmpHead.compression, 4, 1, bmpOut);
-	fwrite(&bmpHead.imageSize, 4, 1, bmpOut);
-	fwrite(&bmpHead.hImageRes, 4, 1, bmpOut);
-	fwrite(&bmpHead.vImageRes, 4, 1, bmpOut);
-	fwrite(&bmpHead.colors, 4, 1, bmpOut);
-	fwrite(&bmpHead.iColors, 4, 1, bmpOut);
+	bmpOut->Write(&bmpHead.magic, 2);
+	bmpOut->Write(&bmpHead.size, 4);
+	bmpOut->Write(&bmpHead.reserved1, 2);
+	bmpOut->Write(&bmpHead.reserved2, 2);
+	bmpOut->Write(&bmpHead.offset, 4);
+
+	bmpOut->Write(&bmpHead.headerSize, 4);
+	bmpOut->Write(&bmpHead.width, 4);
+	bmpOut->Write(&bmpHead.height, 4);
+	bmpOut->Write(&bmpHead.planes, 2);
+	bmpOut->Write(&bmpHead.bpp, 2);
+	bmpOut->Write(&bmpHead.compression, 4);
+	bmpOut->Write(&bmpHead.imageSize, 4);
+	bmpOut->Write(&bmpHead.hImageRes, 4);
+	bmpOut->Write(&bmpHead.vImageRes, 4);
+	bmpOut->Write(&bmpHead.colors, 4);
+	bmpOut->Write(&bmpHead.iColors, 4);
 
 	ColorRGBA *rgba_buffer = (ColorRGBA*) color_buffer;
 
@@ -161,34 +167,36 @@ void Render::OutputBuffers(const char *color_output_file, const char *debug_outp
 		for (long iterX = 0; iterX < hRes; iterX++)
 		{
 			// Exchanged top & bottom because of BMP bitmap layout
-			fwrite(&rgba_buffer[(vRes - iterY -1) * hRes + iterX], 4, 1, bmpOut);
+			bmpOut->Write(&rgba_buffer[(vRes - iterY - 1) * hRes + iterX], 4);
 		}
 	}
 
-	fclose(bmpOut);
+	delete bmpOut;
 
-	if (debug_output_file == NULL)
+	bmpOut = new V2::File(debug_output_file, V2::FileOpenMode::kFileCreate);
+
+	if (bmpOut->GetResultCode() != V2::FileResult::kFileOkay) {
+		printf("Failed to output %s.\n", debug_output_file);
 		return;
+	}
 
-	bmpOut = fopen(debug_output_file, "w");
+	bmpOut->Write(&bmpHead.magic, 2);
+	bmpOut->Write(&bmpHead.size, 4);
+	bmpOut->Write(&bmpHead.reserved1, 2);
+	bmpOut->Write(&bmpHead.reserved2, 2);
+	bmpOut->Write(&bmpHead.offset, 4);
 
-	fwrite(&bmpHead.magic, 2, 1, bmpOut);
-	fwrite(&bmpHead.size, 4, 1, bmpOut);
-	fwrite(&bmpHead.reserved1, 2, 1, bmpOut);
-	fwrite(&bmpHead.reserved2, 2, 1, bmpOut);
-	fwrite(&bmpHead.offset, 4, 1, bmpOut);
-
-	fwrite(&bmpHead.headerSize, 4, 1, bmpOut);
-	fwrite(&bmpHead.width, 4, 1, bmpOut);
-	fwrite(&bmpHead.height, 4, 1, bmpOut);
-	fwrite(&bmpHead.planes, 2, 1, bmpOut);
-	fwrite(&bmpHead.bpp, 2, 1, bmpOut);
-	fwrite(&bmpHead.compression, 4, 1, bmpOut);
-	fwrite(&bmpHead.imageSize, 4, 1, bmpOut);
-	fwrite(&bmpHead.hImageRes, 4, 1, bmpOut);
-	fwrite(&bmpHead.vImageRes, 4, 1, bmpOut);
-	fwrite(&bmpHead.colors, 4, 1, bmpOut);
-	fwrite(&bmpHead.iColors, 4, 1, bmpOut);
+	bmpOut->Write(&bmpHead.headerSize, 4);
+	bmpOut->Write(&bmpHead.width, 4);
+	bmpOut->Write(&bmpHead.height, 4);
+	bmpOut->Write(&bmpHead.planes, 2);
+	bmpOut->Write(&bmpHead.bpp, 2);
+	bmpOut->Write(&bmpHead.compression, 4);
+	bmpOut->Write(&bmpHead.imageSize, 4);
+	bmpOut->Write(&bmpHead.hImageRes, 4);
+	bmpOut->Write(&bmpHead.vImageRes, 4);
+	bmpOut->Write(&bmpHead.colors, 4);
+	bmpOut->Write(&bmpHead.iColors, 4);
 
 	ColorBGRA recursion_scale[10];
 
@@ -207,10 +215,10 @@ void Render::OutputBuffers(const char *color_output_file, const char *debug_outp
 		for (long iterX = 0; iterX < hRes; iterX++)
 		{
 			// Exchanged top & bottom because of BMP bitmap layout
-			fwrite(&recursion_scale[recursion_buffer[(vRes - iterY -1) * hRes + iterX]], 4, 1, bmpOut);
+			bmpOut->Write(&recursion_scale[recursion_buffer[(vRes - iterY -1) * hRes + iterX]], 4);
 		}
 	}
 
-	fclose(bmpOut);
+	delete bmpOut;
 }
 

@@ -8,6 +8,9 @@
 #define rendermt_h
 
 
+#include "V2Thread.h"
+
+
 class RenderMT : public Render
 {
 	struct RenderData
@@ -23,7 +26,7 @@ class RenderMT : public Render
 	};
 
 	private:
-		static void* RenderThread(void *attr);
+		static void RenderThread(const V2::Thread *thread, void *attr);
 
 	public:
 		RenderMT(long init_hRes, long init_vRes);

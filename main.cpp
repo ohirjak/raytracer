@@ -4,7 +4,7 @@
  * @description: 
  */
 
-#include "main.h"
+#include "V2Base.h"
 #include "colors.h"
 #include "geometries.h"
 #include "scene.h"
@@ -26,11 +26,11 @@ const struct VideoMode videoModes[] =
 /*	{ "180", "320x180",        320, 180 },
 	{ "360", "640x360",        640, 360 },*/
 	{ "576p2", "704x576",      704, 576 },
-	{ "720p",  "1280×720 HD",  1280, 720 },
-	{ "1080i", "1440×1080 HD", 1440, 1080 },
-	{ "1080p", "1920×1080 HD", 1920, 1080 },
+	{ "720p",  "1280x720 HD",  1280, 720 },
+	{ "1080i", "1440x1080 HD", 1440, 1080 },
+	{ "1080p", "1920x1080 HD", 1920, 1080 },
 	{ "2K",    "2048x1536",    2048, 1536 },
-	{ "2160p", "3840×2160",    3840, 2160 },
+	{ "2160p", "3840x2160",    3840, 2160 },
 	{ "4K",    "4096x3072",    4096, 3072 },
 	{ "2540p", "4520x2540",    4520, 2540 },
 	{ "4320p", "7680x4320",    7680, 4320 }
@@ -55,58 +55,48 @@ void initScene(Scene *s)
 			sphere->SetReflection(0.5);
 	}
 
-	s->AddLight(new Light(Point3D(-0.5, 2.0, 0.0), Color(1.0, 0.0, 0.5, 0.0)));
-	s->AddLight(new Light(Point3D(2.0, -1.0, -2.0), Color(0.0, 0.6, 0.0, 0.0)));
-}
-
-
-timespec diff(timespec start, timespec end)
-{
-	timespec temp;
-	if ((end.tv_nsec-start.tv_nsec)<0) {
-		temp.tv_sec = end.tv_sec-start.tv_sec-1;
-		temp.tv_nsec = 1000000000+end.tv_nsec-start.tv_nsec;
-	} else {
-		temp.tv_sec = end.tv_sec-start.tv_sec;
-		temp.tv_nsec = end.tv_nsec-start.tv_nsec;
-	}
-	return temp;
+	s->AddLight(new Light(Point3D(-1.0, 0.0, -2.0), Color(0.3, 0.2, 0.1, 0.0)));
+	s->AddLight(new Light(Point3D(2.0, -1.0, -4.0), Color(1.0, 1.0, 1.0, 0.0)));
+//	s->AddLight(new Light(Point3D(-0.5, 2.0, 0.0), Color(1.0, 0.0, 0.5, 0.0)));
+//	s->AddLight(new Light(Point3D(2.0, -1.0, -2.0), Color(0.0, 0.6, 0.0, 0.0)));
 }
 
 
 int main()
 {
+	printf("%s by %s\nUsing %s\n", PROGRAM_NAME, PROGRAM_AUTHOR, PROGRAM_ENGINE);
+
 	Scene *scene = new Scene();
 
 	initScene(scene);
 
-	const int videoMode = 1;
+	const int videoMode = 0;
 
 	printf("Render size = %dx%d\n", videoModes[videoMode].sizeW, videoModes[videoMode].sizeH);
 
 	Render *render = new Render(videoModes[videoMode].sizeW, videoModes[videoMode].sizeH);
 
-	timespec ts1, ts2, res;
+	float time1, time2, res;
 
-	clock_gettime(CLOCK_MONOTONIC, &ts1);
+	time1 = V2::GetTime();
 	render->RenderScene(scene, 5.0, 1.2);
-	clock_gettime(CLOCK_MONOTONIC, &ts2);
+	time2 = V2::GetTime();
 
-	res = diff(ts1, ts2);
+	res = time2 - time1;
 
-	printf("Run time in ms %ld%03ld.%ld\n", (long)res.tv_sec, res.tv_nsec / 1000000, res.tv_nsec % 1000000);
+	printf("Run time in ms %3.3f\n", res);
 
 	delete render;
 
 	render = new RenderMT(videoModes[videoMode].sizeW, videoModes[videoMode].sizeH);
 
-	clock_gettime(CLOCK_MONOTONIC, &ts1);
-	render->RenderScene(scene, 5.0, 1.2);
-	clock_gettime(CLOCK_MONOTONIC, &ts2);
+	time1 = V2::GetTime();
+	render->RenderScene(scene, 5.0, 0.9);
+	time2 = V2::GetTime();
 
-	res = diff(ts1, ts2);
+	res = time2 - time1;
 
-	printf("Run time (MT) in ms %ld%03ld.%ld\n", (long)res.tv_sec, res.tv_nsec / 1000000, res.tv_nsec % 1000000);
+	printf("Run time (MT) in ms %3.3f\n", res);
 
 	render->OutputBuffers("output.bmp", "debug.bmp");
 
@@ -114,6 +104,7 @@ int main()
 	delete scene;
 
 	printf("GOAL: < 33.33ms for minimum performance, < 16.66ms for optimal performance, < 8.33ms for 3D experience.\n");
+	system("pause");
 
 	return 0;
 }
