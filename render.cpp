@@ -12,6 +12,9 @@
 #include "render.h"
 
 
+using namespace V2;
+
+
 Render::Render(long init_hRes, long init_vRes)
 {
 	hRes = init_hRes;
@@ -133,9 +136,9 @@ void Render::OutputBuffers(const char *color_output_file, const char *debug_outp
 	bmpHead.colors = 0;
 	bmpHead.iColors = 0;
 
-	V2::File *bmpOut = new V2::File(color_output_file, V2::FileOpenMode::kFileCreate);
+	V2::File *bmpOut = new V2::File(color_output_file, kFileCreate);
 
-	if (bmpOut->GetResultCode() != V2::FileResult::kFileOkay) {
+	if (bmpOut->GetResultCode() != kFileOkay) {
 		printf("Failed to output %s.\n", color_output_file);
 		return;
 	}
@@ -173,9 +176,9 @@ void Render::OutputBuffers(const char *color_output_file, const char *debug_outp
 
 	delete bmpOut;
 
-	bmpOut = new V2::File(debug_output_file, V2::FileOpenMode::kFileCreate);
+	bmpOut = new V2::File(debug_output_file, kFileCreate);
 
-	if (bmpOut->GetResultCode() != V2::FileResult::kFileOkay) {
+	if (bmpOut->GetResultCode() != kFileOkay) {
 		printf("Failed to output %s.\n", debug_output_file);
 		return;
 	}

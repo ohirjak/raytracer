@@ -37,7 +37,7 @@ DWORD WINAPI Thread::ThreadProc(LPVOID lpParameter)
 	return 0;
 }
 
-#elif LINUX
+#elif LINUX || MACOS
 
 void * Thread::ThreadProc(void *data)
 {
@@ -56,7 +56,7 @@ Thread::~Thread()
 	WaitForSingleObject(threadHandle, INFINITE);
 	CloseHandle(threadHandle);
 
-#elif LINUX
+#elif LINUX || MACOS
 
 	pthread_join(thread, NULL);
 
@@ -76,7 +76,7 @@ Thread::Thread(ThreadRoutineType routine, void *data, unsigned long stackSize)
 	if (threadHandle == NULL)
 		throw ThreadException(kThreadInitFailed);
 
-#elif LINUX
+#elif LINUX || MACOS
 
 	pthread_attr_t attr;
 
@@ -103,6 +103,10 @@ void Thread::SetThreadAffinity(int index) const
 
 	if (pthread_setaffinity_np(thread, sizeof(cpu_set_t), &cpuset))
 		fprintf(stderr, "setaffinity error\n");
+
+#elif MACOS
+
+	// TODO: MAC impl
 
 #endif
 }

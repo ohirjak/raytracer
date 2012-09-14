@@ -78,7 +78,7 @@ namespace V2
 
 		HANDLE fileHandle;
 
-	#elif LINUX
+	#elif LINUX || MACOS
 
 		int fileDesc;
 
@@ -102,8 +102,8 @@ namespace V2
 			return (fileResult);
 		}
 
-		FileResult Read(void *buffer, unsigned long size);
-		FileResult Write(const void *buffer, unsigned long size);
+		FileResult Read(void *buffer, long size);
+		FileResult Write(const void *buffer, long size);
 
 		unsigned long GetSize() const;
 		unsigned long SetPosition(long position, FilePositioningMode mode = kFileBegin);

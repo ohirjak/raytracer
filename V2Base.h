@@ -31,7 +31,8 @@
 #ifdef V2WIN
 
 	#define WIN		1
-	#define LINUX	0
+	#define LINUX		0
+	#define MACOS		0
 
 	#define BIG_ENDIAN	0
 	#define LITTLE_ENDIAN	1
@@ -43,12 +44,24 @@
 #elif V2LINUX
 
 	#define WIN		0
-	#define LINUX	1
+	#define LINUX		1
+	#define MACOS		0
 
 	#define BIG_ENDIAN	0
 	#define LITTLE_ENDIAN	1
 
 	#include "V2Linux.h"
+
+#elif V2MACOS
+
+	#define WIN		0
+	#define LINUX		0
+	#define MACOS		1
+
+	#define BIG_ENDIAN	0
+	#define LITTLE_ENDIAN	1
+
+	#include "V2Macos.h"
 
 #else
 
@@ -272,11 +285,28 @@ namespace V2
 
 		return (ts.tv_sec * 1000.0f + tv.tv_nsec / 1000000.0f);
 
-		/*struct timeval tv;
+	#elif MACOS
+
+/*                typedef unsigned long long      RawTimeValue;
+
+		Nanoseconds nano = AbsoluteToNanoseconds(UpTime());
+		unsigned long long rawTime = (*reinterpret_cast<unsigned long long *>(&nano));
+		return ((long) (rawTime / 1000000UL));*/
+
+		struct timeval tv;
 
 		gettimeofday(&tv, NULL);
-	      
-		return (tv.tv_sec * 1000 + tv.tv_usec / 1000);*/
+
+		long long sec = (long long)tv.tv_sec - 1347623397; // some seconds off
+		/*float r1 = sec * 1000.0f;
+		float r2 = tv.tv_usec / 1000.0f;
+		float ret = r1 + r2;
+
+		printf("r1 %f, r2 %f, ret %f\n", r1, r2, ret);
+
+		return ret;*/
+
+		return (sec * 1000.0f + tv.tv_usec / 1000.0f);
 
 	#endif
 	}

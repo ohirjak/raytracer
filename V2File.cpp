@@ -1,7 +1,7 @@
 #include "V2Base.h"
 #include "V2File.h"
 
-#if LINUX
+#if LINUX || MACOS
 #include <fcntl.h>
 #endif
 
@@ -61,7 +61,7 @@ File::File(const String name, FileOpenMode mode)
 	if (fileHandle == INVALID_HANDLE_VALUE)
 		throw FileException(kFileOpenFailed);
 
-#elif LINUX
+#elif LINUX || MACOS
 
 	int flags = (mode == kFileReadOnly) ? O_RDONLY : O_RDWR;
 	if (mode == kFileCreate)
@@ -85,7 +85,7 @@ File::~File()
 
 	CloseHandle(fileHandle);
 
-#elif LINUX
+#elif LINUX || MACOS
 
 	close(fileDesc);
 
@@ -93,7 +93,7 @@ File::~File()
 }
 
 
-FileResult File::Read(void *buffer, unsigned long size)
+FileResult File::Read(void *buffer, long size)
 {
 #if WIN
 
@@ -108,7 +108,7 @@ FileResult File::Read(void *buffer, unsigned long size)
 
 	return (kFileIOFailed);
 
-#elif LINUX
+#elif LINUX || MACOS
 
 	lseek(fileDesc, filePosition, SEEK_SET);
 
@@ -124,7 +124,7 @@ FileResult File::Read(void *buffer, unsigned long size)
 }
 
 
-FileResult File::Write(const void *buffer, unsigned long size)
+FileResult File::Write(const void *buffer, long size)
 {
 #if WIN
 
@@ -139,7 +139,7 @@ FileResult File::Write(const void *buffer, unsigned long size)
 
 	return (kFileIOFailed);
 
-#elif LINUX
+#elif LINUX || MACOS
 
 	lseek(fileDesc, filePosition, SEEK_SET);
 
@@ -161,7 +161,7 @@ unsigned long File::GetSize() const
 
 	return (GetFileSize(fileHandle, NULL));
 
-#elif LINUX
+#elif LINUX || MACOS
 
 	struct stat buf;
 

@@ -6,10 +6,11 @@
 # setting
 
 CPP = g++
-CXXFLAGS = -pipe -Wall -g
+CXXFLAGS = -pipe -Wall -g -DV2MACOS
 LDFLAGS = -pipe
-LIBS = -lpthread -lrt
-SRC = colors.cpp geometries.cpp main.cpp render.cpp renderGPU.cpp renderGrid.cpp renderMT.cpp scene.cpp
+LIBS = -lpthread
+#LIBS = -lpthread -lrt
+SRC = V2Base.cpp V2File.cpp V2Thread.cpp colors.cpp geometries.cpp main.cpp render.cpp renderGPU.cpp renderGrid.cpp renderMT.cpp scene.cpp
 OUT = raytracer
 OUTPUTS = output.bmp debug.bmp
 
@@ -23,7 +24,7 @@ all:
 build: $(OUT)
 
 optimized:
-	make CXXFLAGS="-pipe -Wall -msse3 -O2"
+	make CXXFLAGS="-pipe -Wall -DV2MACOS -msse3 -O2"
 
 $(OUT): $(SRC:.cpp=.o)
 	$(CPP) $(LDFLAGS) $(LIBS) -o $(OUT) $(SRC:.cpp=.o)

@@ -49,7 +49,7 @@ namespace V2
 			ReleaseMutex(mutexHandle);
 		}
 
-#elif LINUX
+#elif LINUX || MACOS
 
 	private:
 		pthread_mutex_t	mutex;
@@ -142,7 +142,7 @@ namespace V2
 
 		static DWORD WINAPI ThreadProc(LPVOID lpParameter);
 
-#elif LINUX
+#elif LINUX || MACOS
 
 		pthread_t	thread;
 
@@ -165,7 +165,7 @@ namespace V2
 
 			return systemInfo.dwNumberOfProcessors;
 
-#elif LINUX
+#elif LINUX || MACOS
 
 			return sysconf(_SC_NPROCESSORS_ONLN);
 
