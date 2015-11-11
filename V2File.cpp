@@ -112,7 +112,7 @@ FileResult File::Read(void *buffer, long size)
 
 	lseek(fileDesc, filePosition, SEEK_SET);
 
-	if (read(fileDesc, buffer, size) >= size)
+	if (read(fileDesc, buffer, size) == size)
 	{
 		filePosition += size;
 		return (kFileOkay);
